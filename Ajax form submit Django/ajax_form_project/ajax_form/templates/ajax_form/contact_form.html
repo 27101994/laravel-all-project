@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact Form</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+    <h2>Contact Form</h2>
+    <form id="contactForm" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        $(document).ready(function () {
+            $("#contactForm").submit(function (e) {
+                e.preventDefault();
+
+                // Custom validation for name field
+                var nameValue = $("#id_name").val();
+                if (!isFirstLetterCapital(nameValue)) {
+                    alert("Name must start with a capital letter");
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/contact/",
+                    data: $("#contactForm").serialize(),
+                    success: function (response) {
+                        alert(response.success);
+                    },
+                    error: function (response) {
+                        var errors = JSON.parse(response.responseText).error;
+                        alert(errors);
+                    }
+                });
+            });
+
+            // Function to check if the first letter of a string is capital
+            function isFirstLetterCapital(value) {
+                return /^[A-Z]/.test(value);
+            }
+        });
+    </script>
+</body>
+</html>
